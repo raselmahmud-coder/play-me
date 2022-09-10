@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <style>
+    div {
+      font-size: 1.5em;
+      margin-top: 2em;
+    }
+
+    #showText {
+      color: red;
+    }
+  </style>
+  <body>
+    <p>
+      Lorem, ipsum dolor sit amet consectetur adipisicing elit. Natus eum
+      consectetur nam quisquam voluptates quis quibusdam consequuntur, eos ab
+      magnam ducimus animi iusto soluta veniam doloremque a vel vero corrupti
+      repellendus at. Debitis necessitatibus quos illum deserunt exercitationem
+      suscipit autem excepturi aliquid accusamus cumque sapiente dicta
+      consequuntur delectus, fuga itaque!
+    </p>
+    <br />
+    <hr />
+    <code
+      >const firstPhoneNumber = document.evaluate('//phoneNumber', documentNode,
+      null, XPathResult.FIRST_ORDERED_NODE_TYPE, null); console.log(`The first
+      phone number found is ${firstPhoneNumber.singleNodeValue.textContent}`);
+    </code>
+    <hr />
+    <br />
+    <article>
+      This week, Haje went deep with a founder who’s building digital license
+      plates. He mused that building an easy-to-copy hardware product in an
+      incredibly tightly regulated industry where winner-takes-all would be an
+      utter nightmare, but when it works, it works, and it’s fascinating to see
+      Reviver build a company, one license plate at the time."
+    </article>
+    <hr />
+    <br />
+    <aside>
+      Turning coaching into a team sport: Natasha M reports that the founder of
+      Human Q disagrees with some of the biggest and most valuable competitors
+      out there. Instead of one-to-one coaching, Human Q wants to make group
+      coaching an impactful alternative. This founder wants to take on the
+      biggest coaching startups with a group-focused approach.
+    </aside>
+    <hr />
+    <br />
+    <nav>
+      Giving users better service than they expected could literally save a
+      software startup. In one study, companies that spent 10% of yearly revenue
+      on customer success attained peak net recurring revenue.
+    </nav>
+    <hr />
+    <br />
+
+    <div>The selected text is: <span id="showText"></span></div>
+    <div>full xpath: <span id="xpath"></span></div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
