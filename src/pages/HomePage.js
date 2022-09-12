@@ -1,6 +1,4 @@
 import React, { useEffect } from "react";
-import MyAudioPlayer from "../components/MyAudioPlayer";
-// import PlayList from "../components/Playlist";
 
 const HomePage = () => {
   const [music, setMusic] = React.useState([]);
@@ -24,8 +22,8 @@ const HomePage = () => {
   console.log(music);
   return (
     <div>
-      <MyAudioPlayer music={music} />
-      {/* <PlayList/> */}
+      
+      {/* should be audio player here */}
     </div>
   );
 };

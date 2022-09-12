@@ -1,10 +1,15 @@
-import { Route, Routes } from "react-router-dom";
+import  {Route, Routes } from "react-router-dom";
+import  HomePage  from "./pages/HomePage";
+import  FavoritesPage  from "./pages/FavoritesPage";
+import  PlayListPage  from "./pages/FavoritesPage";
+import SearchPage  from "./pages/SearchPage";
+import NavBar from "./components/NavBar";
 import AudioPlayer from "./components/AudioPlayer/AudioPlayer.jsx";
 import tracks from "./components/AudioPlayer/tracks";
 function App() {
   return (
     <div className="container">
-      {/*  <div
+        <div
         style={{
           height: "100vh",
           position: "relative",
@@ -44,7 +49,7 @@ function App() {
             </Routes>
           </div>
         </div>
-      </div> */}
+      </div> 
       {/* <AudioPlayer tracks={tracks} /> */}
     </div>
   );

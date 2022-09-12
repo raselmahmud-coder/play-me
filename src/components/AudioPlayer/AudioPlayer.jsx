@@ -1,28 +1,42 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  handleNextTrack,
+  setDisplayTime,
+  setDuration,
+  setIsPlaying,
+  setTrackIndex,
+  setTrackingProgress,
+  setVolume,
+} from "../../features/Audio/AudioPlayerSlice";
 import AudioControls from "./AudioControls";
 import Backdrop from "./Backdrop";
 import "./styles.css";
 
-/*
- * Read the blog post here:
- * https://letsbuildui.dev/articles/building-an-audio-player-with-react-hooks
- */
-const AudioPlayer = ({ tracks }) => {
-  // State
-  const [trackIndex, setTrackIndex] = useState(0);
-  const [trackProgress, setTrackProgress] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
-  const [isLooping, setIsLooping] = useState(false);
-  const [isShuffling, setIsShuffling] = useState(false);
-  const [displayTime, setDisplayTime] = useState("00:00:00");
-  const [statevolum, setStateVolum] = useState(0.3);
-
+const AudioPlayer = () => {
+  const {
+    trackIndex,
+    trackingProgress,
+    trackList,
+    isPlaying,
+    isShuffle,
+    isRepeat,
+    isMute,
+    volume,
+    currentTime,
+    // duration,
+    isSeeking,
+    isBuffering,
+    isLoaded,
+    isPlayingNext,
+    isPlayingPrev,
+    displayTime,
+  } = useSelector((state) => state.audioPlayer);
+  const dispatch = useDispatch();
   // Destructure for conciseness
-  const { title, artist, color, image, audioSrc } = tracks[trackIndex];
-
+  const { title, artist, color, image, audioSrc } = trackList[trackIndex];
   // Refs
-  const audioRef = useRef(new Audio(audioSrc));
+  const audioRef = useRef("audio");
   const intervalRef = useRef();
   const isReady = useRef(false);
 
@@ -30,7 +44,7 @@ const AudioPlayer = ({ tracks }) => {
   const { duration } = audioRef.current;
   // console.log(duration, "total duration");
   const currentPercentage = duration
-    ? `${(trackProgress / duration) * 100}%`
+    ? `${(trackingProgress / duration) * 100}%`
     : "0%";
   const trackStyling = `
     -webkit-gradient(linear, 0% 0%, 100% 0%, color-stop(${currentPercentage}, #000), color-stop(${currentPercentage}, #777))
@@ -48,95 +62,39 @@ const AudioPlayer = ({ tracks }) => {
     );
   };
 
-  const startTimer = () => {
-    // Clear any timers already running
-    clearInterval(intervalRef.current);
-
-    intervalRef.current = setInterval(() => {
-      if (audioRef.current.ended) {
-        toNextTrack();
-      } else {
-        const timeForDisplay = displayTimer(audioRef.current.currentTime);
-        setDisplayTime(timeForDisplay);
-        setTrackProgress(audioRef.current.currentTime);
-      }
-    }, [1000]);
-  };
-
   const onScrub = (value) => {
+    console.log("onScrub", value);
     // Clear any timers already running
     clearInterval(intervalRef.current);
     audioRef.current.currentTime = value;
-    setTrackProgress(audioRef.current.currentTime);
+    dispatch(setTrackingProgress(audioRef.current.currentTime));
   };
 
   const onScrubEnd = () => {
     // If not already playing, start
     if (!isPlaying) {
-      setIsPlaying(true);
+      dispatch(setIsPlaying("play"));
       console.log("on Scrub End");
     }
-    startTimer();
   };
-
-  const toPrevTrack = () => {
-    if (trackIndex - 1 < 0) {
-      setTrackIndex(tracks.length - 1);
-    } else {
-      setTrackIndex(trackIndex - 1);
-    }
-  };
-
-  const toNextTrack = () => {
-    if (trackIndex < tracks.length - 1) {
-      setTrackIndex(trackIndex + 1);
-    } else {
-      setTrackIndex(0);
-    }
-  };
-
-  useEffect(() => {
-    if (isPlaying) {
+  if (isPlaying === "play") {
+    setTimeout(() => {
       audioRef.current.play();
-      startTimer();
-    } else {
-      audioRef.current.pause();
-      clearInterval(intervalRef.current);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isPlaying]);
-
-  // Handles cleanup and setup when changing tracks
-  useEffect(() => {
+    }, 0);
+  }
+  if (isPlaying === "pause") {
     audioRef.current.pause();
-    // console.log("Pause",audioRef.current.pause());
+  }
 
-    audioRef.current = new Audio(audioSrc);
-    setTrackProgress(audioRef.current.currentTime);
-
-    console.log("ready to play", isReady.current);
-    if (isReady.current && isPlaying) {
-      audioRef.current.play();
-      // setIsPlaying(true);
-      startTimer();
-    } else {
-      // Set the isReady ref as true for the next pass
-      isReady.current = true;
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [trackIndex]);
-
-  useEffect(() => {
-    // Pause and clean up on unmount
-    console.log("unmount");
-    return () => {
-      audioRef.current.pause();
-      clearInterval(intervalRef.current);
-    };
-  }, []);
   const handleVolume = (q) => {
-    setStateVolum(q);
+    dispatch(setVolume(q));
     audioRef.current.volume = q;
+  };
+  const handleTimeCount = (time) => {
+    // console.log(time, "time");
+    const timeForDisplay = displayTimer(time);
+    dispatch(setDisplayTime(timeForDisplay));
+    dispatch(setTrackingProgress(time));
   };
   return (
     <div className="audio-player">
@@ -149,12 +107,20 @@ const AudioPlayer = ({ tracks }) => {
         <h2 className="title">{title}</h2>
         <h3 className="artist">{artist}</h3>
         <h4>{displayTime}</h4>
+        <audio
+          onTimeUpdate={(e) => handleTimeCount(e.target.currentTime)}
+          onCanPlay={(e) => dispatch(setDuration(e.target.duration))}
+          onEnded={(e) => dispatch(handleNextTrack())}
+          ref={audioRef}
+          preload="true"
+          src={trackList[trackIndex].audioSrc}
+        />
         <div className="vlme">
           <span className="volum">
             <i className="fas fa-volume-down"></i>
           </span>
           <input
-            value={Math.round(statevolum * 100)}
+            value={Math.round(volume * 100)}
             min={0}
             max={100}
             type="range"
@@ -163,15 +129,10 @@ const AudioPlayer = ({ tracks }) => {
             onChange={(e) => handleVolume(e.target.value / 100)}
           />
         </div>
-        <AudioControls
-          isPlaying={isPlaying}
-          onPrevClick={toPrevTrack}
-          onNextClick={toNextTrack}
-          onPlayPauseClick={setIsPlaying}
-        />
+        <AudioControls />
         <input
           type="range"
-          value={trackProgress}
+          value={trackingProgress}
           step="1"
           min="0"
           max={duration ? duration : `${duration}`}
