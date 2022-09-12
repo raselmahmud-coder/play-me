@@ -45,7 +45,7 @@ function App() {
           </div>
         </div>
       </div> */}
-      <AudioPlayer tracks={tracks} />
+      {/* <AudioPlayer tracks={tracks} /> */}
     </div>
   );
 }
