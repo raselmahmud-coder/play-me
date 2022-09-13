@@ -1,0 +1,12 @@
+.playIcon {
+  position: relative;
+  cursor: pointer;
+  top: 0.5%;
+  left: -28%;
+}
+@media screen and (max-width: 768px) {
+  
+  .playIcon {
+    left: -13.5% !important;
+  }
+}

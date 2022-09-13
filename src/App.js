@@ -28,7 +28,7 @@ function App() {
             background: "linear-gradient(145deg, #cccbdd, #f3f1ff)",
             boxShadow: "5px 5px 12px #5b5a62, -5px -5px 12px #ffffff",
           }}>
-          <div className="col-md-2">
+          <div className="col-md-2 col-lg-2 col-12 ">
             <div
               style={{
                 position: "relative",
@@ -40,7 +40,7 @@ function App() {
               <NavBar />
             </div>
           </div>
-          <div className="col-md-10">
+          <div className="col-md-10 col-lg-10 col-12">
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="favorites" element={<FavoritesPage />} />

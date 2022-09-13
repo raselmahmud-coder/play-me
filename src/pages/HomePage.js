@@ -1,28 +1,56 @@
 import React, { useEffect } from "react";
-
+import { useGetPlayListQuery } from "../features/API/APISlice";
+import { fetchTracks } from "../features/Audio/AudioPlayerSlice";
+import Spinner from "../utils/Spinner";
+import { useDispatch, useSelector } from "react-redux";
+import SingleSong from "../components/SingleSong";
 const HomePage = () => {
-  const [music, setMusic] = React.useState([]);
-  useEffect(() => {
-    const options = {
-      method: "GET",
-      headers: {
-        "X-RapidAPI-Key": "5350642341msh795a42b4d1f7467p194d25jsnd346031e1cb7",
-        "X-RapidAPI-Host": "shazam.p.rapidapi.com",
-      },
-    };
+  /*   const {
+    isError,
+    isLoading,
+    isFetching,
+    // data: trackList,
+    error,
+  } = useGetPlayListQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  }); */
+  const dispatch = useDispatch();
+  const {
+    trackList: { tracks },
+    isLoaded: isLoading,
+    error: isError,
+  } = useSelector((state) => state.audioPlayer);
 
-    fetch(
-      "https://shazam.p.rapidapi.com/songs/list-recommendations?key=484129036&locale=en-US",
-      options,
-    )
-      .then((response) => response.json())
-      .then((response) => setMusic(response))
-      .catch((err) => console.error(err));
-  }, []);
-  console.log(music);
+  useEffect(() => {
+    dispatch(fetchTracks());
+  }, [dispatch]);
+
+  console.log(tracks);
+  // what to render if the query is loading
+  let content;
+  if (isLoading)
+    content = (
+      <div className="text-center">
+        <Spinner />
+      </div>
+    );
+  if (isError) content = <div className="text-danger">{isError}</div>;
+  if (!isLoading && !isError && tracks?.length > 0) {
+    content = (
+      <>
+        {tracks?.slice(0, 6)?.map((item) => (
+          <SingleSong key={item.key} song={item} />
+        ))}
+      </>
+    );
+  }
   return (
-    <div>
-      
+    <div className="row">
+      <h3 className="text-center mb-4 mt-2">
+        Your PlayList &amp; Favorites Music
+      </h3>
+      {content}
+
       {/* should be audio player here */}
     </div>
   );

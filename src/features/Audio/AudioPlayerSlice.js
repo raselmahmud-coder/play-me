@@ -17,13 +17,27 @@ const initialState = {
   isPlayingNext: false,
   isPlayingPrev: false,
   displayTime: "00:00:00",
+  error: "",
 };
 
 export const fetchTracks = createAsyncThunk("audio/fetchTracks", async () => {
-  const response = await fetch(
-    "https://jsonplaceholder.typicode.com/albums/1/photos",
-  );
-  return response.json();
+  try {
+    const options = {
+      method: "GET",
+      headers: {
+        "X-RapidAPI-Key": "5350642341msh795a42b4d1f7467p194d25jsnd346031e1cb7",
+        "X-RapidAPI-Host": "shazam.p.rapidapi.com",
+      },
+    };
+
+    const response = await fetch(
+      "https://shazam.p.rapidapi.com/songs/list-recommendations?key=484129036&locale=en-US",
+      options,
+    );
+    return response.json();
+  } catch (err) {
+    console.error(err);
+  }
 });
 export const audioPlayerSlice = createSlice({
   name: "audioPlayer",
@@ -65,12 +79,17 @@ export const audioPlayerSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchTracks.pending, (state) => {
+        state.error = "";
+        state.isLoaded = true;
         state.trackList = [];
       })
       .addCase(fetchTracks.fulfilled, (state, action) => {
+        state.isLoaded = false;
         state.trackList = action.payload;
       })
-      .addCase(fetchTracks.rejected, (state) => {
+      .addCase(fetchTracks.rejected, (state, action) => {
+        state.isLoaded = false;
+        state.error = action.error.message;
         state.trackList = [];
       });
   },
@@ -82,7 +101,7 @@ export const {
   setIsPlaying,
   setVolume,
   handleNextTrack,
-    handlePrevTrack,
-    setDuration,
+  handlePrevTrack,
+  setDuration,
 } = audioPlayerSlice.actions;
 export default audioPlayerSlice.reducer;
