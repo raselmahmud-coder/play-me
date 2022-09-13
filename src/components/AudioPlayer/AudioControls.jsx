@@ -12,12 +12,10 @@ import {
 } from "../../features/Audio/AudioPlayerSlice";
 
 const AudioControls = () => {
-  const { trackIndex, trackList, isPlaying } = useSelector(
+  const { trackIndex, isPlaying } = useSelector(
     (state) => state.audioPlayer,
   );
   const dispatch = useDispatch();
-
-
   return (
     <div className="audio-controls">
       <button

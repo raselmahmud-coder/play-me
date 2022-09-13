@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { BsXCircle } from "react-icons/bs";
 import { useSelector, useDispatch } from "react-redux";
 import {
   handleNextTrack,
@@ -17,24 +18,14 @@ const AudioPlayer = () => {
   const {
     trackIndex,
     trackingProgress,
-    trackList,
     isPlaying,
-    isShuffle,
-    isRepeat,
-    isMute,
     volume,
-    currentTime,
-    // duration,
-    isSeeking,
-    isBuffering,
-    isLoaded,
-    isPlayingNext,
-    isPlayingPrev,
     displayTime,
   } = useSelector((state) => state.audioPlayer);
+  const { isLoadingTrack, singleTrack,}= useSelector((state) => state.APISlice);
   const dispatch = useDispatch();
   // Destructure for conciseness
-  const { title, artist, color, image, audioSrc } = trackList[trackIndex];
+  const { title, artist, color, image, audioSrc } = singleTrack[trackIndex];
   // Refs
   const audioRef = useRef("audio");
   const intervalRef = useRef();
@@ -97,7 +88,13 @@ const AudioPlayer = () => {
     dispatch(setTrackingProgress(time));
   };
   return (
-    <div className="audio-player">
+    <div className="audio-player" /* style={{display:"none"}} */>
+      <i>
+        <BsXCircle
+          size={"30px"}
+          className="close"
+        />
+      </i>
       <div className="track-info">
         <img
           className="artwork"
@@ -113,7 +110,7 @@ const AudioPlayer = () => {
           onEnded={(e) => dispatch(handleNextTrack())}
           ref={audioRef}
           preload="true"
-          src={trackList[trackIndex].audioSrc}
+          src={singleTrack[trackIndex].audioSrc}
         />
         <div className="vlme">
           <span className="volum">

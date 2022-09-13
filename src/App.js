@@ -4,11 +4,11 @@ import  FavoritesPage  from "./pages/FavoritesPage";
 import  PlayListPage  from "./pages/FavoritesPage";
 import SearchPage  from "./pages/SearchPage";
 import NavBar from "./components/NavBar";
-import AudioPlayer from "./components/AudioPlayer/AudioPlayer.jsx";
-import tracks from "./components/AudioPlayer/tracks";
+import AudioPlayer from "./components/AudioPlayer/AudioPlayer";
+
 function App() {
   return (
-    <div className="container">
+    <div className="container pb-5">
         <div
         style={{
           height: "100vh",
@@ -50,7 +50,7 @@ function App() {
           </div>
         </div>
       </div> 
-      {/* <AudioPlayer tracks={tracks} /> */}
+     {/* <AudioPlayer/> */}
     </div>
   );
 }

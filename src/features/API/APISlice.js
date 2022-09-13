@@ -1,29 +1,71 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import allFetchTracks from "./fetchTracks";
+import getTrackDetails from "./getTrackDetails";
+import tracks from "../../components/AudioPlayer/tracks";
+const initialState = {
+  trackList: [],
+  singleTrack: {},
+  isLoadingTracks: false,
+  isLoadingTrack: false,
+  success: false,
+  error: "",
+};
 
-export const APISlice = createApi({
-  reducerPath: "API",
-  baseQuery: fetchBaseQuery({
-    baseUrl: "https://shazam.p.rapidapi.com",
-    method: "GET",
-    headers: {
-      "X-RapidAPI-Key": "5350642341msh795a42b4d1f7467p194d25jsnd346031e1cb7",
-      "X-RapidAPI-Host": "shazam.p.rapidapi.com",
-    },
-  }),
-  tagTypes: ["songs"],
-  endpoints: (build) => ({
-    getPlayList: build.query({
-      query: () => ({
-        url: `/list-recommendations?key=484129036&locale=en-US`,
-        method: "GET",
-        headers: {
-          "X-RapidAPI-Key":
-            "5350642341msh795a42b4d1f7467p194d25jsnd346031e1cb7",
-          "X-RapidAPI-Host": "shazam.p.rapidapi.com",
-        },
-      }),
-      providesTags: () => [{ type: "Post" }],
-    }),
-  }),
+export const fetchTracks = createAsyncThunk("audio/fetchTracks", async () => {
+  try {
+    return await allFetchTracks();
+  } catch (err) {
+    console.error(err);
+  }
 });
-export const { useGetPlayListQuery } = APISlice;
+export const singleTrackDetails = createAsyncThunk(
+  "audio/singleTrackDetails",
+  async (key) => {
+    try {
+      return await getTrackDetails(key);
+    } catch (err) {
+      console.error(err);
+    }
+  },
+);
+export const APISlice = createSlice({
+  name: "api",
+  initialState,
+  extraReducers: (builder) => {
+    builder
+      // fetchTracks for all tracks
+      .addCase(fetchTracks.pending, (state) => {
+        state.error = "";
+        state.isLoadingTracks = true;
+        state.trackList = [];
+      })
+      .addCase(fetchTracks.fulfilled, (state, action) => {
+        state.isLoadingTracks = false;
+        state.trackList = action.payload;
+      })
+      .addCase(fetchTracks.rejected, (state, action) => {
+        state.isLoadingTracks = false;
+        state.error = action.error.message;
+        state.trackList = [];
+      })
+      // fot details track
+      .addCase(singleTrackDetails.pending, (state) => {
+        state.success = false;
+        state.error = "";
+        state.isLoadingTrack = true;
+        state.singleTrack = {};
+      })
+      .addCase(singleTrackDetails.fulfilled, (state, action) => {
+        state.isLoadingTrack = false;
+        state.success = true;
+        state.singleTrack = action.payload;
+      })
+      .addCase(singleTrackDetails.rejected, (state, action) => {
+        state.isLoadingTrack = false;
+        state.error = action.error.message;
+        state.singleTrack = {};
+      });
+  },
+});
+
+export default APISlice.reducer;
