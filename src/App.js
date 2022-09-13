@@ -1,15 +1,17 @@
-import  {Route, Routes } from "react-router-dom";
-import  HomePage  from "./pages/HomePage";
-import  FavoritesPage  from "./pages/FavoritesPage";
-import  PlayListPage  from "./pages/FavoritesPage";
-import SearchPage  from "./pages/SearchPage";
+import { Route, Routes } from "react-router-dom";
+import HomePage from "./pages/HomePage";
+import FavoritesPage from "./pages/FavoritesPage";
+import PlayListPage from "./pages/FavoritesPage";
+import SearchPage from "./pages/SearchPage";
 import NavBar from "./components/NavBar";
 import AudioPlayer from "./components/AudioPlayer/AudioPlayer";
-
+import { useSelector } from "react-redux";
+import Spinner from "./utils/Spinner";
 function App() {
+  const { isClick, isLoadingTrack } = useSelector((state) => state.APISlice);
   return (
     <div className="container pb-5">
-        <div
+      <div
         style={{
           height: "100vh",
           position: "relative",
@@ -49,8 +51,15 @@ function App() {
             </Routes>
           </div>
         </div>
-      </div> 
-     {/* <AudioPlayer/> */}
+      </div>
+      {isClick &&
+        (isLoadingTrack ? (
+          <div className="mx-auto text-center">
+            <Spinner />
+          </div>
+        ) : (
+          <AudioPlayer />
+        ))}
     </div>
   );
 }

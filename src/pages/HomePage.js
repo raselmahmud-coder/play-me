@@ -7,7 +7,7 @@ const HomePage = () => {
 
   const dispatch = useDispatch();
   const {
-    trackList: { tracks },
+    trackList: { tracks }={},
     isLoadingTracks: isLoading,
     error: isError,
   } = useSelector((state) => state.APISlice);

@@ -1,36 +1,32 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import allFetchTracks from "./fetchTracks";
 import getTrackDetails from "./getTrackDetails";
-import tracks from "../../components/AudioPlayer/tracks";
 const initialState = {
   trackList: [],
   singleTrack: {},
   isLoadingTracks: false,
   isLoadingTrack: false,
   success: false,
+  isClick: false,
   error: "",
 };
 
-export const fetchTracks = createAsyncThunk("audio/fetchTracks", async () => {
-  try {
-    return await allFetchTracks();
-  } catch (err) {
-    console.error(err);
-  }
-});
+export const fetchTracks = createAsyncThunk(
+  "audio/fetchTracks",
+  async () => await allFetchTracks(),
+);
 export const singleTrackDetails = createAsyncThunk(
   "audio/singleTrackDetails",
-  async (key) => {
-    try {
-      return await getTrackDetails(key);
-    } catch (err) {
-      console.error(err);
-    }
-  },
+  async (key) => await getTrackDetails(key),
 );
 export const APISlice = createSlice({
   name: "api",
   initialState,
+  reducers: {
+    handleOnClick: (state, action) => {
+      state.isClick = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       // fetchTracks for all tracks
@@ -67,5 +63,5 @@ export const APISlice = createSlice({
       });
   },
 });
-
+export const { handleOnClick } = APISlice.actions;
 export default APISlice.reducer;

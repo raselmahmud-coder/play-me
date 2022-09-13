@@ -1,39 +1,37 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import { BsXCircle } from "react-icons/bs";
 import { useSelector, useDispatch } from "react-redux";
+import { handleOnClick } from "../../features/API/APISlice";
 import {
   handleNextTrack,
   setDisplayTime,
   setDuration,
   setIsPlaying,
-  setTrackIndex,
   setTrackingProgress,
   setVolume,
 } from "../../features/Audio/AudioPlayerSlice";
+import Spinner from "../../utils/Spinner";
 import AudioControls from "./AudioControls";
 import Backdrop from "./Backdrop";
 import "./styles.css";
 
 const AudioPlayer = () => {
-  const {
-    trackIndex,
-    trackingProgress,
-    isPlaying,
-    volume,
-    displayTime,
-  } = useSelector((state) => state.audioPlayer);
-  const { isLoadingTrack, singleTrack,}= useSelector((state) => state.APISlice);
+  const { trackIndex, trackingProgress, isPlaying, volume, displayTime } =
+    useSelector((state) => state.audioPlayer);
+  const { isLoadingTrack, singleTrack, error } = useSelector(
+    (state) => state.APISlice,
+  );
   const dispatch = useDispatch();
-  // Destructure for conciseness
-  const { title, artist, color, image, audioSrc } = singleTrack[trackIndex];
+  const {
+    title,
+    genres: { primary } = {},
+    images: { background } = {},
+    hub: { actions } = {},
+  } = singleTrack || {};
   // Refs
   const audioRef = useRef("audio");
-  const intervalRef = useRef();
-  const isReady = useRef(false);
 
-  // Destructure for conciseness
-  const { duration } = audioRef.current;
-  // console.log(duration, "total duration");
+  const { duration } = audioRef?.current || {};
   const currentPercentage = duration
     ? `${(trackingProgress / duration) * 100}%`
     : "0%";
@@ -41,7 +39,6 @@ const AudioPlayer = () => {
     -webkit-gradient(linear, 0% 0%, 100% 0%, color-stop(${currentPercentage}, #000), color-stop(${currentPercentage}, #777))
   `;
   const displayTimer = (time) => {
-    // eslint-disable-next-line no-useless-concat
     return (
       "0" +
       Math.floor(time / 3600) +
@@ -54,16 +51,13 @@ const AudioPlayer = () => {
   };
 
   const onScrub = (value) => {
-    console.log("onScrub", value);
-    // Clear any timers already running
-    clearInterval(intervalRef.current);
     audioRef.current.currentTime = value;
     dispatch(setTrackingProgress(audioRef.current.currentTime));
   };
 
   const onScrubEnd = () => {
     // If not already playing, start
-    if (!isPlaying) {
+    if (isPlaying === "play") {
       dispatch(setIsPlaying("play"));
       console.log("on Scrub End");
     }
@@ -82,71 +76,85 @@ const AudioPlayer = () => {
     audioRef.current.volume = q;
   };
   const handleTimeCount = (time) => {
-    // console.log(time, "time");
     const timeForDisplay = displayTimer(time);
     dispatch(setDisplayTime(timeForDisplay));
     dispatch(setTrackingProgress(time));
   };
-  return (
-    <div className="audio-player" /* style={{display:"none"}} */>
-      <i>
-        <BsXCircle
-          size={"30px"}
-          className="close"
-        />
-      </i>
-      <div className="track-info">
-        <img
-          className="artwork"
-          src={image}
-          alt={`track artwork for ${title} by ${artist}`}
-        />
-        <h2 className="title">{title}</h2>
-        <h3 className="artist">{artist}</h3>
-        <h4>{displayTime}</h4>
-        <audio
-          onTimeUpdate={(e) => handleTimeCount(e.target.currentTime)}
-          onCanPlay={(e) => dispatch(setDuration(e.target.duration))}
-          onEnded={(e) => dispatch(handleNextTrack())}
-          ref={audioRef}
-          preload="true"
-          src={singleTrack[trackIndex].audioSrc}
-        />
-        <div className="vlme">
-          <span className="volum">
-            <i className="fas fa-volume-down"></i>
-          </span>
-          <input
-            value={Math.round(volume * 100)}
-            min={0}
-            max={100}
-            type="range"
-            name="volBar"
-            id="volBar"
-            onChange={(e) => handleVolume(e.target.value / 100)}
+  const handleClose = () => {
+    dispatch(setIsPlaying("pause"));
+    dispatch(handleOnClick(false));
+  };
+  // decide what to render
+  let content;
+  if (isLoadingTrack)
+    content = (
+      <div className="mx-auto text-center">
+        <Spinner />;
+      </div>
+    );
+  if (error) content = <div className="text-danger">{error}</div>;
+  if (!isLoadingTrack && !error && title)
+    content = (
+      <>
+        <div className="audio-player">
+          <i onClick={handleClose}>
+            <BsXCircle size={"30px"} className="close" />
+          </i>
+          <div className="track-info">
+            <img
+              className="artwork"
+              src={background}
+              alt={`track artwork for ${title} by ${primary}`}
+            />
+            <h2 className="title">{title}</h2>
+            <h3 className="artist">{primary}</h3>
+            <h4>{displayTime}</h4>
+            <audio
+              onTimeUpdate={(e) => handleTimeCount(e.target.currentTime)}
+              onCanPlay={(e) => dispatch(setDuration(e.target.duration))}
+              onEnded={(e) => dispatch(handleNextTrack())}
+              ref={audioRef}
+              preload="true"
+              src={actions?.length > 0 ? actions[1]?.uri : ""}
+            />
+            <div className="vlme">
+              <span className="volum">
+                <i className="fas fa-volume-down"></i>
+              </span>
+              <input
+                value={Math.round(volume * 100)}
+                min={0}
+                max={100}
+                type="range"
+                name="volBar"
+                id="volBar"
+                onChange={(e) => handleVolume(e.target.value / 100)}
+              />
+            </div>
+            <AudioControls />
+            <input
+              type="range"
+              value={trackingProgress}
+              step="1"
+              min="0"
+              max={duration ? duration : `${duration}`}
+              className="progress"
+              onChange={(e) => onScrub(e.target.value)}
+              onMouseUp={onScrubEnd}
+              onKeyUp={onScrubEnd}
+              style={{ background: trackStyling }}
+            />
+          </div>
+          <Backdrop
+            trackIndex={trackIndex}
+            // activeColor={color}
+            isPlaying={isPlaying}
           />
         </div>
-        <AudioControls />
-        <input
-          type="range"
-          value={trackingProgress}
-          step="1"
-          min="0"
-          max={duration ? duration : `${duration}`}
-          className="progress"
-          onChange={(e) => onScrub(e.target.value)}
-          onMouseUp={onScrubEnd}
-          onKeyUp={onScrubEnd}
-          style={{ background: trackStyling }}
-        />
-      </div>
-      <Backdrop
-        trackIndex={trackIndex}
-        activeColor={color}
-        isPlaying={isPlaying}
-      />
-    </div>
-  );
+      </>
+    );
+
+  return content;
 };
 
 export default AudioPlayer;

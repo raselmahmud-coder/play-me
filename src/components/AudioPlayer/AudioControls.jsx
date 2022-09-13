@@ -8,11 +8,10 @@ import {
   handleNextTrack,
   handlePrevTrack,
   setIsPlaying,
-  setTrackIndex,
 } from "../../features/Audio/AudioPlayerSlice";
 
 const AudioControls = () => {
-  const { trackIndex, isPlaying } = useSelector(
+  const { isPlaying } = useSelector(
     (state) => state.audioPlayer,
   );
   const dispatch = useDispatch();
