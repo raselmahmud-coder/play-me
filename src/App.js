@@ -1,12 +1,13 @@
 import { Route, Routes } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import FavoritesPage from "./pages/FavoritesPage";
-import PlayListPage from "./pages/FavoritesPage";
+import PlayListPage from "./pages/PlayListPage";
 import SearchPage from "./pages/SearchPage";
 import NavBar from "./components/NavBar";
 import AudioPlayer from "./components/AudioPlayer/AudioPlayer";
 import { useSelector } from "react-redux";
 import Spinner from "./utils/Spinner";
+import PlayListItem from "./pages/PlayListItem";
 function App() {
   const { isClick, isLoadingTrack } = useSelector((state) => state.APISlice);
   return (
@@ -46,7 +47,9 @@ function App() {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="favorites" element={<FavoritesPage />} />
-              <Route path="playlist" element={<PlayListPage />} />
+              <Route path="playlist" element={<PlayListPage />}>
+                <Route path=":item" element={<PlayListItem />} />
+              </Route>
               <Route path="search" element={<SearchPage />} />
             </Routes>
           </div>

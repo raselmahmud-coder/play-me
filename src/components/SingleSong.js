@@ -10,6 +10,7 @@ import {
   setIsPlaying,
   setTrackingProgress,
 } from "../features/Audio/AudioPlayerSlice";
+import { setLocalStorageItem } from "../features/playList/playListSlice";
 
 const SingleSong = ({ song }) => {
   const dispatch = useDispatch();
@@ -17,9 +18,10 @@ const SingleSong = ({ song }) => {
   const [onClickKey, setOnClickKey] = useState("");
   const { isLoadingTrack, error, success } = useSelector(
     (state) => state.APISlice,
-    );
-    const [localStorageItem, setLocalStorageItem] = useState([]);
+  );
+  const { localStorageItem } = useSelector((state) => state.playList);
   const handlePlaySong = (key) => {
+    // previous state reset
     dispatch(setIsPlaying(""));
     dispatch(setDisplayTime("00:00:00"));
     dispatch(setDuration(0));
@@ -32,14 +34,10 @@ const SingleSong = ({ song }) => {
     if (success) setOnClickKey("");
   }, [success]);
   useEffect(() => {
-    const favorite = localStorage.getItem("favorite");
-    if (favorite) {
-      setLocalStorageItem(JSON.parse(favorite));
-    }
-  }, []);
+    dispatch(setLocalStorageItem(JSON.parse(localStorage.getItem("favorite"))));
+  }, [dispatch]);
   const handleFavorite = (key) => {
-      const favorite = localStorage.getItem("favorite");
-      console.log(favorite)
+    const favorite = localStorage.getItem("favorite");
     if (favorite?.length > 0 && favorite !== null) {
       const favoriteList = JSON.parse(favorite);
       const isExist = favoriteList.find((item) => item.key === key);
@@ -51,21 +49,17 @@ const SingleSong = ({ song }) => {
         localStorage.setItem("favorite", JSON.stringify(newList));
       }
     } else {
-        console.log(key,"song", song)
       localStorage.setItem("favorite", JSON.stringify([song]));
-      }
-      setLocalStorageItem(JSON.parse(localStorage.getItem("favorite")));
-    };
-    console.log(localStorageItem, "local")
+    }
+    dispatch(setLocalStorageItem(JSON.parse(localStorage.getItem("favorite"))));
+  };
   return (
     <div className="col-md-3 col-lg-3 col-12">
       <h5 className="p-2">
         {subtitle}{" "}
         <span style={{ cursor: "pointer" }} onClick={() => handleFavorite(key)}>
-          {localStorageItem.length > 0 &&
-          localStorageItem.find(
-            (item) => item.key === key,
-          ) ? (
+          {localStorageItem?.length > 0 &&
+          localStorageItem.find((item) => item.key === key) ? (
             <BsStarFill />
           ) : (
             <BsStar />

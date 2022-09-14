@@ -4,3 +4,8 @@
   font-family: "poppins", sans-serif;
   background-color: #E3E1F5;
 }
+.active{
+  color: #fff;
+  border-radius: 25%;
+  background-color: hsl(144 50% 70%);
+}

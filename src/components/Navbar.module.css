@@ -1,16 +1,12 @@
-.nav-link{
+.NavLink{
     padding-left: 5px !important;
     text-transform: capitalize !important;
 }
-.nav-link:hover {
+.NavLink:hover {
     color: #fff !important;
     background-color: #182233;
     padding-left: 5px;
     border-radius: 25%;
 }
-.active{
-    color: #fff;
-    border-radius: 25%;
-    background-color: hsl(144 50% 70%);
-}
+
 
