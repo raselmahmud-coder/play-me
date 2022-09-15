@@ -13,14 +13,15 @@ function PopUp() {
   const handleSubmit = (e) => {
     e.preventDefault();
     const text = e.target.playlist.value;
+    const newText = text.split(" ").join("-");
     const playlist = JSON.parse(localStorage.getItem("playlist"));
     if (playlist?.length > 9) {
       alert("You can only create 10 playlists");
     } else {
       if (playlist === null || playlist?.length === 0) {
-        localStorage.setItem("playlist", JSON.stringify([text]));
+        localStorage.setItem("playlist", JSON.stringify([newText]));
       } else {
-        localStorage.setItem("playlist", JSON.stringify([...playlist, text]));
+        localStorage.setItem("playlist", JSON.stringify([...playlist, newText]));
       }
       dispatch(setPlaylist(JSON.parse(localStorage.getItem("playlist"))));
     }

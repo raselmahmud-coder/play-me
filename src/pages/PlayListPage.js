@@ -31,7 +31,7 @@ const PlayListPage = () => {
                     {playlist?.map((item, index) => (
                       <li key={index} className="nav-item">
                         <NavLink
-                          className={`nav-link`}
+                          className={`nav-link text-capitalize`}
                           style={{ color: "black", padding: "8px 10px" }}
                           to={`/playlist/${item}`}>
                           {item}

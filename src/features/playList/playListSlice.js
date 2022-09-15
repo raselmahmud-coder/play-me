@@ -9,12 +9,25 @@ const initialState = {
   autoComplete: [],
   isLoading: false,
   error: "",
+  localPlaylist: [],
+  searchResult: {},
+  searchLoading: false,
+  searchError: "",
 };
 export const autoCompleteSearch = createAsyncThunk(
   "playList/autoComplete",
   async (searchSong) => {
     const response = await axiosIns.get("/auto-complete", {
       params: { term: searchSong, locale: "en-US", offset: "0", limit: "10" },
+    });
+    return await response.data;
+  },
+);
+export const Search = createAsyncThunk(
+  "song/search",
+  async (search) => {
+    const response = await axiosIns.get("/search", {
+      params: { term: search, locale: "en-US", offset: "0", limit: "10" },
     });
     return await response.data;
   },
@@ -36,6 +49,9 @@ export const playListSlice = createSlice({
     setSearchSong: (state, action) => {
       state.searchSong = action.payload;
     },
+    setLocalPlaylist: (state, action) => {
+      state.localPlaylist = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -50,9 +66,27 @@ export const playListSlice = createSlice({
       .addCase(autoCompleteSearch.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.error.message;
+      })
+      // for search feature
+      .addCase(Search.pending, (state) => {
+        state.searchLoading = true;
+        state.searchError = "";
+      })
+      .addCase(Search.fulfilled, (state, action) => {
+        state.searchLoading = false;
+        state.searchResult = action.payload;
+      })
+      .addCase(Search.rejected, (state, action) => {
+        state.searchLoading = false;
+        state.searchError = action.error.message;
       });
   },
 });
-export const { setShowPopUp, setPlaylist, setLocalStorageItem, setSearchSong } =
-  playListSlice.actions;
+export const {
+  setShowPopUp,
+  setPlaylist,
+  setLocalStorageItem,
+  setSearchSong,
+  setLocalPlaylist,
+} = playListSlice.actions;
 export default playListSlice.reducer;

@@ -48,6 +48,14 @@ function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="favorites" element={<FavoritesPage />} />
               <Route path="playlist" element={<PlayListPage />}>
+                <Route
+                  index
+                  element={
+                    <main style={{ padding: "1rem" }}>
+                      <h4 className="text-center mt-5">Select any Playlist</h4>
+                    </main>
+                  }
+                />
                 <Route path=":item" element={<PlayListItem />} />
               </Route>
               <Route path="search" element={<SearchPage />} />
