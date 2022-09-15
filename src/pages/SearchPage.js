@@ -100,7 +100,12 @@ const SearchPage = () => {
   }
   return (
     <>
-      <div className="row">
+      <div
+        className="row"
+        onSubmit={(e) => {
+          e.preventDefault();
+          dispatch(setSearchSong(e.target.search.value));
+        }}>
         <Form className="d-flex justify-content-center">
           <Form.Group controlId="search">
             <Form.Control

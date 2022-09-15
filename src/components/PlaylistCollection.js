@@ -25,11 +25,11 @@ const PlaylistCollection = () => {
     if (searchSong) dispatch(autoCompleteSearch(searchSong));
   }, [dispatch, searchSong]);
   useEffect(() => {
-    dispatch(
+   if(item) {dispatch(
       setLocalPlaylist(
-        JSON.parse(localStorage.getItem("createPlaylist"))[item],
+        JSON.parse(localStorage.getItem("createPlaylist"))?.[item],
       ),
-    );
+    );}
   }, [dispatch, item]);
   const handleSubmit = (e) => {
     e.preventDefault();
