@@ -9,7 +9,6 @@ const FavoritesPage = () => {
   useEffect(() => {
     dispatch(setLocalStorageItem(JSON.parse(localStorage.getItem("favorite"))));
   }, [dispatch]);
-  console.log(localStorageItem);
   // decide what to render
   let content;
   if (localStorageItem?.length === 0 || localStorageItem === null) {
@@ -17,7 +16,7 @@ const FavoritesPage = () => {
   }
   if (localStorageItem?.length > 0)
     content = localStorageItem.map((item) => (
-      <SingleSong item={item.key} song={item} />
+      <SingleSong key={item.key} song={item} />
     ));
   return (
     <div className="row">

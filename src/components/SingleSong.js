@@ -31,8 +31,10 @@ const SingleSong = ({ song }) => {
     dispatch(handleOnClick(true));
   };
   useEffect(() => {
+    // after success need to clean
     if (success) setOnClickKey("");
   }, [success]);
+
   useEffect(() => {
     dispatch(setLocalStorageItem(JSON.parse(localStorage.getItem("favorite"))));
   }, [dispatch]);

@@ -7,7 +7,8 @@ import NavBar from "./components/NavBar";
 import AudioPlayer from "./components/AudioPlayer/AudioPlayer";
 import { useSelector } from "react-redux";
 import Spinner from "./utils/Spinner";
-import PlayListItem from "./pages/PlayListItem";
+import "./global.css";
+import PlayListItem from "./components/PlayListItem";
 function App() {
   const { isClick, isLoadingTrack } = useSelector((state) => state.APISlice);
   return (
@@ -52,7 +53,7 @@ function App() {
                   index
                   element={
                     <main style={{ padding: "1rem" }}>
-                      <h4 className="text-center mt-5">Select any Playlist</h4>
+                      <h4 className="text-center mt-5">Select here any Playlist</h4>
                     </main>
                   }
                 />

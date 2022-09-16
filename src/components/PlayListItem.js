@@ -1,8 +1,8 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import PlaylistCollection from "../components/PlaylistCollection";
-import SinglePlayList from "../components/SinglePlayList";
+import PlaylistCollection from "./PlaylistCollection";
+import SinglePlayList from "./SinglePlayList";
 
 const PlayListItem = () => {
   const { item } = useParams();

@@ -62,6 +62,7 @@ const PlaylistCollection = () => {
         );
       }
     }
+    console.log("first", newPlayList);
     dispatch(
       setLocalPlaylist(
         JSON.parse(localStorage.getItem("createPlaylist"))[item],
@@ -91,7 +92,6 @@ const PlaylistCollection = () => {
           <p key={index} className="m-0 py-1">
             {localPlaylist?.find((i) => i === it.term) ? (
               <span
-                onClick={() => handleAddSong(it.term)}
                 style={{
                   padding: "3px 5px",
                   borderRadius: "4px",
@@ -99,7 +99,7 @@ const PlaylistCollection = () => {
                   marginRight: "5px",
                 }}
                 className="bg-danger">
-                Remove
+                Already Added
               </span>
             ) : (
               <span
